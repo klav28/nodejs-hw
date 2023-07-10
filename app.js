@@ -1,25 +1,33 @@
-const express = require('express')
-const logger = require('morgan')
-const cors = require('cors')
+import moviesService from "./movies/index.js";
 
-const contactsRouter = require('./routes/api/contacts')
+const invokeAction = async ({ action, id, title, director }) => {
+  switch (action) {
+    case "list":
+      const allMovies = await moviesService.getAllMovies();
+      return console.log(allMovies);
+    case "getById":
+      const oneMovie = await moviesService.getMovieById(id);
+      return console.log(oneMovie);
+    case "add":
+      const newMovie = await moviesService.addMovie({ title, director });
+      return console.log(newMovie);
+    case "updateById":
+      const updateMovie = await moviesService.updateMovieById(id, {
+        title,
+        director,
+      });
+      return console.log(updateMovie);
+    case "deleteById":
+      const deleteMovie = await moviesService.deleteMovieById(id);
+      return console.log(deleteMovie);
+    default:
+      console.log("Unknown action");
+  }
+};
 
-const app = express()
-
-const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
-
-app.use(logger(formatsLogger))
-app.use(cors())
-app.use(express.json())
-
-app.use('/api/contacts', contactsRouter)
-
-app.use((req, res) => {
-  res.status(404).json({ message: 'Not found' })
-})
-
-app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message })
-})
-
-module.exports = app
+const actionIndex = process.argv.indexOf("--action");
+if (actionIndex !== -1) {
+  const action = process.argv[actionIndex + 1];
+  console.log("Action: ", action);
+  invokeAction({ action });
+}
