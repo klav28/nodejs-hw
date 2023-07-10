@@ -9,7 +9,6 @@ const updateMoviesStorage = (movies) =>
 
 export const getAllMovies = async () => {
   const data = await fs.readFile(moviesPath);
-  console.log("HELLO! get all movies");
   return JSON.parse(data);
 };
 
