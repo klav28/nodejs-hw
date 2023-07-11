@@ -30,6 +30,7 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
       break;
 
     case "add":
+      return console.log(await contacts.addContact(name, email, phone));
       // ... name email phone
       break;
 
@@ -38,5 +39,4 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
   }
 };
 
-invokeAction({ action: "remove", id: "rsKkOQUi80UsgVPCcLZZW" });
-invokeAction({ action: "list" });
+invokeAction(argv);
