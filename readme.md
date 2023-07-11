@@ -1,5 +1,12 @@
 ## GoIT Node.js Course Template Homework
 
+Домашнє завдання 1
+
+https://ibb.co/sRTccjt
+https://ibb.co/pz8QGd5
+https://ibb.co/5KFTd1G
+https://ibb.co/dKKWc3R
+
 Виконайте форк цього репозиторію для виконання домашніх завдань (2-6)
 Форк створить репозиторій на вашому http://github.com
 
