@@ -8,9 +8,12 @@ import { HttpError } from "../../helpers/index.js";
 const contactsRouter = express.Router();
 
 const contactsAddSchema = Joi.object({
-  name: Joi.string().required(),
-  phone: Joi.string().required(),
-  email: Joi.string().required().email({ minDomainSegments: 2 }),
+  name: Joi.string().required().messages({ "any.required": "missing fields" }),
+  phone: Joi.string().required().messages({ "any.required": "missing fields" }),
+  email: Joi.string()
+    .required()
+    .email({ minDomainSegments: 2 })
+    .messages({ "any.required": "missing fields" }),
 });
 
 contactsRouter.get("/", async (req, res, next) => {
@@ -53,12 +56,9 @@ contactsRouter.delete("/:id", async (req, res, next) => {
     const { id } = req.params;
     const result = await contactsService.removeContact(id);
     if (!result) {
-      throw HttpError(
-        404,
-        `Nothing to delete: Contact with id=${id} not found`
-      );
+      throw HttpError(404, `Not found`);
     }
-    res.json(result);
+    res.json({ message: "contact deleted" });
   } catch (error) {
     next(error);
   }

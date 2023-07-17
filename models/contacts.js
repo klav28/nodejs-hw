@@ -41,14 +41,14 @@ export const addContact = async ({ name, email, phone }) => {
   return newContact;
 };
 
-export const updateContact = async (contactId, { name, email, phone }) => {
+export const updateContact = async (id, { name, email, phone }) => {
   // Оновлює контакт та повертає об'єкт оновленого контакту або null, якщо контакт не знайдено.
   const data = await listContacts();
-  const index = data.findIndex((el) => el.id === contactId);
+  const index = data.findIndex((el) => el.id === id);
   if (index === -1) {
     return null;
   }
-  data[index] = { contactId, name, email, phone };
+  data[index] = { id, name, email, phone };
   await updateStorage(data);
   return data[index];
 };
