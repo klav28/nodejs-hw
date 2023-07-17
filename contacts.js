@@ -17,7 +17,8 @@ export const getContactById = async (contactId) => {
   const data = await listContacts();
   const result = data.find((el) => el.id === contactId);
   return result || null;
-  // ...твій код. Повертає об'єкт контакту з таким id. Повертає null, якщо контакт з таким id не знайдений.
+  // ...твій код. Повертає об'єкт контакту з таким id.
+  // Повертає null, якщо контакт з таким id не знайдений.
 };
 
 export const removeContact = async (contactId) => {
