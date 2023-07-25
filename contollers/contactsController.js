@@ -1,11 +1,12 @@
-import contactsService from "../models/contacts.js";
+import Contact from "../models/contact.js";
 
 import { controlWrapper } from "../decorators/index.js";
 
 import { HttpError } from "../helpers/index.js";
 
 const getAll = async (req, res) => {
-  const result = await contactsService.listContacts();
+  const result = await Contact.find({});
+  console.log("RESULT: ", result);
   res.json(result);
 };
 
