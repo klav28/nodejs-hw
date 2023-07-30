@@ -5,21 +5,25 @@ import usersSchema from "../../schemas/users-joischeme.js";
 import { validateBody } from "../../decorators/index.js";
 import { isEmptyBody, isValidId } from "../../middleware/index.js";
 
+import authenticate from "../../middleware/auth.js";
+
 const usersRouter = express.Router();
 
 usersRouter.post(
   "/register",
   isEmptyBody,
-  validateBody(usersSchema.usersRegisterSchema),
+  validateBody(usersSchema.usersSchema),
   usersController.registerUser
 );
 
 usersRouter.post(
   "/signin",
   isEmptyBody,
-  validateBody(usersSchema.usersRegisterSchema),
+  validateBody(usersSchema.usersSchema),
   usersController.signinUser
 );
+
+usersRouter.get("/current", authenticate, usersController.getCurrent);
 
 usersRouter.post("/signout", isEmptyBody, usersController.signoutUser);
 

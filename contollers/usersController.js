@@ -8,22 +8,14 @@ import { controlWrapper } from "../decorators/index.js";
 
 import { HttpError } from "../helpers/index.js";
 
-// const getAll = async (req, res) => {
-//   const result = await Contact.find({}, "-createdAt -updatedAt");
-//   res.json(result);
-// };
-
-// const getById = async (req, res) => {
-//   const { id } = req.params;
-//   const result = await Contact.findById(id);
-//   if (!result) {
-//     throw HttpError(404, `Contact with id=${id} not found`);
-//   }
-//   res.json(result);
-// };
+const getCurrent = (req, res) => {
+  const { email } = req.user;
+  res.json({ email });
+};
 
 const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
+
   const user = await User.findOne({ email });
   if (user) {
     throw HttpError(409, "Email In Use");
@@ -67,39 +59,9 @@ const signoutUser = async (req, res) => {
   res.status(204).json();
 };
 
-// const updateById = async (req, res) => {
-//   const { id } = req.params;
-//   const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
-//   if (!result) {
-//     throw HttpError(404, `Contact with id=${id} not found`);
-//   }
-//   res.json(result);
-// };
-
-// const updateStatusContact = async (req, res) => {
-//   const { id } = req.params;
-//   const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
-//   if (!result) {
-//     throw HttpError(404, `id=${id} not found`);
-//   }
-//   res.json(result);
-// };
-
-// const deleteById = async (req, res) => {
-//   const { id } = req.params;
-//   console.log("To Delete", id);
-//   const result = await Contact.findByIdAndDelete(id);
-//   if (!result) {
-//     throw HttpError(404, `Not found`);
-//   }
-//   res.json({ message: "contact deleted" });
-// };
-
 export default {
-  //   getAll: controlWrapper(getAll),
-  //   getById: controlWrapper(getById),
+  getCurrent: controlWrapper(getCurrent),
   registerUser: controlWrapper(registerUser),
   signinUser: controlWrapper(signinUser),
   signoutUser: controlWrapper(signoutUser),
-  //   deleteById: controlWrapper(deleteById),
 };
