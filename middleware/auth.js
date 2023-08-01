@@ -8,15 +8,12 @@ const { JWT_SECRET } = process.env;
 const authenticate = async (req, res, next) => {
   const { authorization = "" } = req.headers;
   const [bearer, token] = authorization.split(" ");
-  console.log(`${bearer}, ${token}, ${authorization}`);
   if (bearer !== "Bearer") {
     throw HttpError(401, "Not Bearer");
   }
   try {
     const { id } = jwt.verify(token, JWT_SECRET);
-    console.log("ID: ", id);
     const user = await User.findById(id);
-    console.log("User -", user);
     if (!user || !user.token) {
       throw HttpError(401, "Not ID");
     }

@@ -7,7 +7,8 @@ import { HttpError } from "../helpers/index.js";
 const getAll = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const skip = (page - 1) * limit;
-  const result = await Contact.find({}, "-createdAt -updatedAt", {
+  const filter = req.query;
+  const result = await Contact.find(filter, "-createdAt -updatedAt", {
     skip,
     limit,
   }).populate("owner", "email");
@@ -49,7 +50,6 @@ const updateStatusContact = async (req, res) => {
 
 const deleteById = async (req, res) => {
   const { id } = req.params;
-  console.log("To Delete", id);
   const result = await Contact.findByIdAndDelete(id);
   if (!result) {
     throw HttpError(404, `Not found`);

@@ -59,9 +59,19 @@ const signoutUser = async (req, res) => {
   res.status(204).json();
 };
 
+const updateSubscriptionUser = async (req, res) => {
+  const { id } = req.params;
+  const result = await User.findByIdAndUpdate(id, req.body, { new: true });
+  if (!result) {
+    throw HttpError(404, `id=${id} not found`);
+  }
+  res.json(result);
+};
+
 export default {
   getCurrent: controlWrapper(getCurrent),
   registerUser: controlWrapper(registerUser),
   signinUser: controlWrapper(signinUser),
   signoutUser: controlWrapper(signoutUser),
+  updateSubscriptionUser: controlWrapper(updateSubscriptionUser),
 };

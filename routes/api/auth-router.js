@@ -27,4 +27,12 @@ usersRouter.get("/current", authenticate, usersController.getCurrent);
 
 usersRouter.post("/signout", isEmptyBody, usersController.signoutUser);
 
+usersRouter.patch(
+  "/:id/subscription",
+  isValidId,
+  isEmptyBody,
+  validateBody(usersSchema.usersUpdateSubscriptionSchema),
+  usersController.updateSubscriptionUser
+);
+
 export default usersRouter;

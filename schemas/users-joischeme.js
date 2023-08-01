@@ -9,8 +9,14 @@ const usersSchema = Joi.object({
     .pattern(emailRegexp)
     .messages({ "any.required": "missing fields" }),
   password: Joi.string().min(6).required(),
+  subscription: Joi.string().valid("starter", "pro", "business"),
+});
+
+const usersUpdateSubscriptionSchema = Joi.object({
+  subscription: Joi.string().valid("starter", "pro", "business"),
 });
 
 export default {
   usersSchema,
+  usersUpdateSubscriptionSchema,
 };
