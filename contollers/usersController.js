@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 
 const { JWT_SECRET } = process.env;
 
@@ -14,7 +15,7 @@ const getCurrent = (req, res) => {
 };
 
 const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
 
   const user = await User.findOne({ email });
   if (user) {
@@ -22,8 +23,16 @@ const registerUser = async (req, res) => {
   }
 
   const hashPass = await bcrypt.hash(password, 10);
+  const avatar = gravatar.url(email, {
+    s: "200",
+    d: "monsterid",
+  });
 
-  const newUser = await User.create({ ...req.body, password: hashPass });
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPass,
+    avatarURL: avatar,
+  });
 
   res.status(201).json({
     name: newUser.name,
