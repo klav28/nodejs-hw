@@ -2,6 +2,12 @@ import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
+import Jimp from "jimp";
+
+import fs from "fs/promises";
+import path from "path";
+
+const avatarPath = path.resolve("public", "avatars");
 
 const { JWT_SECRET } = process.env;
 
@@ -77,10 +83,33 @@ const updateSubscriptionUser = async (req, res) => {
   res.json(result);
 };
 
+const patchAvatarUser = async (req, res) => {
+  const { _id } = req.user;
+  const { path: tempPath, filename } = req.file;
+  const newPath = path.join(avatarPath, filename);
+  Jimp.read(tempPath, (err, avatar) => {
+    if (err) throw err;
+    avatar
+      .cover(250, 250, Jimp.HORIZONTAL_ALIGN_CENTER) // resize
+      .quality(60) // set JPEG quality
+      .write(newPath); // save
+  });
+  await fs.rm(tempPath);
+  const avatarURL = path.join("avatars", filename);
+  console.log(avatarURL);
+  const result = await User.findByIdAndUpdate(
+    _id,
+    { ...req.body, avatarURL },
+    { new: true }
+  );
+  res.json(result);
+};
+
 export default {
   getCurrent: controlWrapper(getCurrent),
   registerUser: controlWrapper(registerUser),
   signinUser: controlWrapper(signinUser),
   signoutUser: controlWrapper(signoutUser),
   updateSubscriptionUser: controlWrapper(updateSubscriptionUser),
+  patchAvatarUser: controlWrapper(patchAvatarUser),
 };
