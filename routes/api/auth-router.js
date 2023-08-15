@@ -3,9 +3,12 @@ import express from "express";
 import usersController from "../../contollers/usersController.js";
 import usersSchema from "../../schemas/users-joischeme.js";
 import { validateBody } from "../../decorators/index.js";
-import { isEmptyBody, isValidId } from "../../middleware/index.js";
-
-import authenticate from "../../middleware/auth.js";
+import {
+  isEmptyBody,
+  isValidId,
+  authenticate,
+  upload,
+} from "../../middleware/index.js";
 
 const usersRouter = express.Router();
 
@@ -33,6 +36,13 @@ usersRouter.patch(
   isEmptyBody,
   validateBody(usersSchema.usersUpdateSubscriptionSchema),
   usersController.updateSubscriptionUser
+);
+
+usersRouter.patch(
+  "/avatars",
+  upload.single("avatar"),
+  authenticate,
+  usersController.patchAvatarUser
 );
 
 export default usersRouter;
