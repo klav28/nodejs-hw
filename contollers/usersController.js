@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
 import Jimp from "jimp";
+import { nanoid } from "nanoid";
+
+import { HttpError, sendMail, createVerifyEmail } from "../helpers/index.js";
 
 import fs from "fs/promises";
 import path from "path";
@@ -12,8 +15,6 @@ const avatarPath = path.resolve("public", "avatars");
 const { JWT_SECRET } = process.env;
 
 import { controlWrapper } from "../decorators/index.js";
-
-import { HttpError } from "../helpers/index.js";
 
 const getCurrent = (req, res) => {
   const { email } = req.user;
@@ -34,15 +35,61 @@ const registerUser = async (req, res) => {
     d: "monsterid",
   });
 
+  const verificationToken = nanoid();
+
   const newUser = await User.create({
     ...req.body,
     password: hashPass,
     avatarURL: avatar,
+    verificationToken,
   });
+
+  const verifyEmail = createVerifyEmail({ email, verificationToken });
+
+  await sendMail(verifyEmail);
 
   res.status(201).json({
     name: newUser.name,
     email: newUser.email,
+  });
+};
+
+const verifyEmail = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+  await User.findByIdAndUpdate(user._id, {
+    verify: true,
+    verificationToken: null,
+  });
+
+  res.json({
+    message: "Verification successful",
+  });
+};
+
+const resendVerifyEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(404, "User Not Found");
+  }
+
+  if (user.verify) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+
+  const verifyEmail = createVerifyEmail({
+    email,
+    verificationToken: user.verificationToken,
+  });
+
+  await sendMail(verifyEmail);
+
+  res.json({
+    message: "Resend email success",
   });
 };
 
@@ -108,6 +155,8 @@ const patchAvatarUser = async (req, res) => {
 export default {
   getCurrent: controlWrapper(getCurrent),
   registerUser: controlWrapper(registerUser),
+  verifyEmail: controlWrapper(verifyEmail),
+  resendVerifyEmail: controlWrapper(resendVerifyEmail),
   signinUser: controlWrapper(signinUser),
   signoutUser: controlWrapper(signoutUser),
   updateSubscriptionUser: controlWrapper(updateSubscriptionUser),
